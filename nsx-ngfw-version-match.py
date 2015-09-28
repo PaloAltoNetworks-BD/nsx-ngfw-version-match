@@ -20,6 +20,7 @@ from pprint import pformat
 from pandevice import errors
 from pandevice.firewall import Firewall
 from pandevice.panorama import Panorama
+from pan.xapi import PanXapiError
 
 ###
 ### Modify these settings
@@ -30,12 +31,13 @@ PANORAMA_HOSTNAME = "10.0.0.1"
 PANORAMA_USERNAME = "admin"
 PANORAMA_PASSWORD = "admin"
 
-# Logging level (DEBUG or INFO)
+# Logging level (DEBUG or INFO or WARN)
 DEBUG_LEVEL = logging.INFO
 
 # Stop the entire script if there's an error upgrading
 # a firewall.  If False, an error will cause the problem firewall
 # to be skipped and the next firewall will be upgraded.
+# Recommended setting is True
 STOP_ON_ERROR = True
 
 ###
@@ -116,14 +118,20 @@ def main():
     # For each device, upgrade to the most common version
 
     for device in upgrade_devices:
-        # Connect to the device through Panorama to trigger an upgrade
-        # (do not use Panorama batch upgrade)
-        pandevice = Firewall(PANORAMA_HOSTNAME,
-                             serial=device['serial'],
-                             api_key=panorama.api_key)
-        # Upgrade to target version and reboot
-        pandevice.software.upgrade_to_version("target_version")
-
+        try:
+            # Connect to the device through Panorama to trigger an upgrade
+            # (do not use Panorama batch upgrade)
+            pandevice = Firewall(PANORAMA_HOSTNAME,
+                                 serial=device['serial'],
+                                 api_key=panorama.api_key)
+            # Upgrade to target version and reboot
+            pandevice.software.upgrade_to_version("target_version")
+        except PanXapiError as e:
+            # Only raise the exception if STOP_ON_ERROR is true.
+            # Otherwise continue to the next firewall.
+            if STOP_ON_ERROR:
+                raise e
 
 if __name__ == "__main__":
     main()
+
