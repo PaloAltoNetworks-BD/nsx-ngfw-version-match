@@ -5,15 +5,15 @@ Overview
 --------
 
 This script automatically upgrades any firewalls in an NSX environment so 
-that all firewalls on all ESX hosts have the same PAN-OS version.  It can be 
+that all firewalls on all ESX hosts have the same PAN-OS version. It can be 
 run as a cron job or using VMware Orchestrator tools like VRA or VRO to
 trigger on new host addition.
 
 The script automatically determines which Panorama device-group contains
-the NSX firewalls, and which version of PAN-OS they should be running.  The 
+the NSX firewalls, and which version of PAN-OS they should be running. The 
 target version of PAN-OS for all upgrades is the version that more than 50% 
-of the NSX firewalls are running.  All intermediate upgrades to get to the 
-target version and all reboots after upgrades are handled automatically.  
+of the NSX firewalls are running. All intermediate upgrades to get to the 
+target version and all reboots after upgrades are handled automatically. 
 Firewalls are never downgraded by this script, only upgraded.
 
 Author
@@ -37,7 +37,12 @@ This install process will be easier in the future.
 
 pan-python:
 
+    # if you don't have pip (most OSX users), install it first:
+    easy_install pip
+    
+    # then install the pan-python library:
     pip install pan-python==0.7.0
+    
 
 pandevice:
 
@@ -82,9 +87,9 @@ Run the script:
 Security
 --------
    
-A note about security.  This script contains your Panorama credentials, so it
-is recommended to have the script owned by a specific user with limited  
-access, and remove all permissions incuding read permissions for other users.
+A note about security: This script contains your Panorama credentials, so it
+is recommended to have the script owned by a specific user with limited 
+access, and remove all permissions including read permissions for other users.
 
 For example:
 
